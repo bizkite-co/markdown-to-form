@@ -1,0 +1,238 @@
+
+# 2024-11-14 22:41:55.881790
++/exit
+
+# 2024-11-15 10:25:00.284224
++/add create-function.ipynb
+
+# 2024-11-15 10:35:18.844321
++You and I created a Azure Function App as described in the `create-function.ipynb` list of Azure CLI commands. We used the `config-local-git` option and that didn't work. It created a git repo URL that I was not able to clone, and the repo was not accessable in the web GUI, so I unlinked that git repo and connected the Function App to a GitHub repo that this chat is in the local version of. Now I need to recreate the Function App code and spec in this repo, I think, and when I commit it, I think that will allow us to deploy it to the Azure Function App. This is a new Function App, so there is no concern about existing code logic. That hasn't been implemented yet. We are just getting the Function App DevOps set up at this point, and then we will implement logic.
+
+# 2024-11-15 11:10:07.943816
++y
+
+# 2024-11-15 11:10:07.955708
++/run mkdir -p MarkdownToSurvey
+
+# 2024-11-15 11:10:08.340630
++/run npm init -y
+
+# 2024-11-15 11:10:10.371081
++/run npm install @azure/functions
+
+# 2024-11-15 14:35:42.779068
++/run mkdir -p MarkdownToSurvey
+
+# 2024-11-15 14:35:43.025296
++/run npm init -y
+
+# 2024-11-15 14:35:43.775501
++/run npm install @azure/functions
+
+# 2024-11-15 15:04:19.076554
++/run npm install @azure/functions azure-functions-core-tools@4
+
+# 2024-11-15 15:04:44.107538
++/run npm install --save-dev azure-functions-core-tools@4
+
+# 2024-11-15 22:09:24.077295
++Do I need to create a `function.json` in the `MarkdownToSurvey` like this?
+
+# 2024-11-15 22:09:38.507536
++/run func start
+
+# 2024-11-15 22:11:26.465182
++And I think I might need a `host.json` and to move the `index.json` into the `MarkdownToSurvay/`. What else do I need to deploy it and test the current DevOps state?
+
+# 2024-11-15 22:11:37.891920
++y
+
+# 2024-11-15 22:11:41.651546
++/run mv index.js MarkdownToSurvey/
+
+# 2024-11-15 22:11:46.363014
++/run npm install -g azure-functions-core-tools@4
+
+# 2024-11-16 09:24:38.897696
++/run func --version
+
+# 2024-11-16 09:24:40.190816
++/run func start
+
+# 2024-11-16 09:25:39.799844
++n
+
+# 2024-11-16 09:30:44.465920
++I saw that it appears that `MarkdownToSurvey` should be used as the project root. Is that correct? You got the error that `host.json` should be in the project root so you tried to run this ```cd MarkdownToSurvey         
++npm install @azure/functions
++func start  ```, moving the node_modules into `MarkdownToSurvey`? So, what I did is just move the whole `node_modules/` and `package.json` into `MarkdownToSurvey/`. Is that wrong? I want to clean up vestigial code if we intend to restructure the app. What is the best tree structure? Can you scetch the tree structure in ASCII?
+
+# 2024-11-16 09:31:56.282319
++n
+
+# 2024-11-16 09:35:22.728511
++/run tree
+
+# 2024-11-16 09:35:27.403521
++n
+
+# 2024-11-16 09:39:15.140740
++/run tree -L 5 -I 'node_modules/'
+
+# 2024-11-16 09:39:17.394556
++y
+
+# 2024-11-16 09:39:47.372196
++/run cat MarkdownToSurvey/src/functions/MarkdownToSurvey/function.json
+
+# 2024-11-16 09:40:14.226329
++/run cat MarkdownToSurvey/src/functions/MarkdownToSurvey/function.json
+
+# 2024-11-16 09:40:39.529434
++/run cat MarkdownToSurvey/src/functions/MarkdownToSurvey/function.json
+
+# 2024-11-16 09:41:06.714007
++/run cat MarkdownToSurvey/src/functions/MarkdownToSurvey/function.json
+
+# 2024-11-16 09:41:59.964091
++/map-refresh
+
+# 2024-11-16 09:42:10.646990
++/add index.js
+
+# 2024-11-16 09:42:14.306016
++n
+
+# 2024-11-16 09:42:37.392313
++/add MarkdownToSurvey/src/*
+
+# 2024-11-16 09:43:09.156963
++/add MarkdownToSurvey/src/functions/MarkdownToSurvey/function.json
+
+# 2024-11-16 09:43:24.321569
++/map
+
+# 2024-11-16 09:43:29.857486
++/map-refresh
+
+# 2024-11-16 09:44:02.336487
++/drop MarkdownToSurvey/function.json
+
+# 2024-11-16 09:45:30.141157
++/add MardownToSurvey/src/functions/MarkdownToSurvey/index.js
+
+# 2024-11-16 09:45:32.986237
++n
+
+# 2024-11-16 09:45:50.729779
++/add MarkdownToSurvey/src/functions/MarkdownToSurvey/index.js
+
+# 2024-11-16 09:46:08.560724
++/add MarkdownToSurvey/package.json
+
+# 2024-11-16 09:46:49.481598
++Can you see the files now? Do you need access to any additional files?
+
+# 2024-11-16 09:47:10.429804
++/run cat MarkdownToSurvey/src/functions/MarkdownToSurvey/index.js
+
+# 2024-11-16 09:47:10.780520
++/run cat MarkdownToSurvey/package.json
+
+# 2024-11-16 09:47:11.092898
++/run cat MarkdownToSurvey/host.json
+
+# 2024-11-16 09:47:14.988198
++y
+
+# 2024-11-16 09:47:32.326276
++/run cat MarkdownToSurvey/src/functions/MarkdownToSurvey/index.js
+
+# 2024-11-16 09:47:32.661157
++/run cat MarkdownToSurvey/package.json
+
+# 2024-11-16 09:47:33.131846
++/run cat MarkdownToSurvey/host.json
+
+# 2024-11-16 09:47:48.127459
++n
+
+# 2024-11-16 09:48:17.460227
++/run tree -L 5 -I 'node_modules/'
+
+# 2024-11-16 09:48:20.780238
++y
+
+# 2024-11-16 09:48:47.395394
++/run cd MarkdownToSurvey
+
+# 2024-11-16 09:48:47.739718
++/run npm install marked uuid
+
+# 2024-11-16 09:50:56.990412
++Do we have everything we need now to test the function?
+
+# 2024-11-16 09:51:07.654603
++/run cd MarkdownToSurvey
+
+# 2024-11-16 09:51:07.962901
++/run npm start
+
+# 2024-11-16 09:51:38.053571
++y
+
+# 2024-11-16 09:51:56.021845
++/run curl http://localhost:7071/api/MarkdownToSurvey
+
+# 2024-11-16 09:51:56.440947
++/run http http://localhost:7071/api/MarkdownToSurvey
+
+# 2024-11-16 09:52:29.040299
++/run pwd
+
+# 2024-11-16 09:52:35.477771
++y
+
+# 2024-11-16 09:52:50.300698
++/run func --version
+
+# 2024-11-16 09:53:18.354055
++n
+
+# 2024-11-16 09:53:21.031727
++/run npm start
+
+# 2024-11-16 09:53:27.892075
++y
+
+# 2024-11-16 10:49:32.794412
++There were some serious configuration issues, all having to do with your misunderstanding of the file tree. You tried several times to add files that didn't exist. You should have a map of the file structure, but run `pwd` and ` tree -L 5 -I 'node_modules/'` if you have any questions. Your `pacakge.json` `start` script, for instance, started with `cd MarkdownToSurvey && function start`, but the `package.json` is in the `MarkdownToSurvey` directory. There is the additional confusion of having two `MarkdownToSurvey` segments in the `MarkdownToSurvey/src/functions/MarkdownToSurvey/index.js` path. What are the names of the two segments? Is the outer one the `Function App` and the inner one the `function`? I would like to talk about how to make them unique. I've edited the `package.json` and a couple other files, so don't edit them without getting the latest version. Now, if I navigate to `markdown-to-form/MarkdownToSurvey/` and run `npm start`, I get this: 
++```sh
++ npm start
++
++> markdown-to-form@1.0.0 start
++> func start
++
++
++Azure Functions Core Tools
++Core Tools Version:       4.0.6610 Commit hash: N/A +0d55b5d7efe83d85d2b5c6e0b0a9c1b213e96256 (64-bit)
++Function Runtime Version: 4.1036.1.23224
++
++[2024-11-16T18:47:25.087Z] Worker process started and initialized.
++
++Functions:
++
++        MarkdownToSurvey: [GET,POST] http://localhost:7071/api/MarkdownToSurvey
++
++For detailed output, run func with --verbose flag.
++[2024-11-16T18:47:30.023Z] Host lock lease acquired by instance ID '000000000000000000000000206802BD'.
++[2024-11-16T18:47:36.168Z] Executing 'Functions.MarkdownToSurvey' (Reason='This function was programmatically called via the host APIs.', Id=6926d5f4-7b7a-4e15-a5dd-81e57f1807a1)
++[2024-11-16T18:47:36.348Z] Markdown to Survey function processed a request.
++[2024-11-16T18:47:36.495Z] Executed 'Functions.MarkdownToSurvey' (Succeeded, Id=6926d5f4-7b7a-4e15-a5dd-81e57f1807a1, Duration=366ms)
++```. So, the next thing I should probably try to do is to deploy the function.  
+
+# 2024-11-16 10:51:43.531436
++n
+
+# 2024-11-16 10:52:55.743458
++/run az --version
