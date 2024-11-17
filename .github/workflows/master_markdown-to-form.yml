@@ -46,7 +46,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    __environment__
+    environment: production
     
     steps:
       - name: Download artifact from build job
