@@ -236,3 +236,124 @@
 
 # 2024-11-16 10:52:55.743458
 +/run az --version
+
+# 2024-11-16 22:04:36.487998
++I have pushed this latest code to the GitHub remote, which is connected to thisAzure Function App. When I try to sync the Function App in the Azure web GUI, I get this error:
++```
++Failed to redeploy: Redeployment failed because your workflow file in your repository does not have a 'workflow_dispatch' trigger. To fix, add the 'workflow_dispatch' trigger to the workflow file under 
++```
+
+# 2024-11-16 22:04:54.621303
++y
+
+# 2024-11-16 22:05:51.245158
++/run gh workflow view
+
+# 2024-11-16 22:32:04.968567
++/run gh workflow view
+
+# 2024-11-16 22:32:12.283709
++y
+
+# 2024-11-16 22:37:36.535511
++/run gh workflow view master_markdown-to-form.yml --yaml
+
+# 2024-11-16 22:38:01.661118
++/run gh workflow view master_markdown-to-form.yml --yaml
+
+# 2024-11-16 22:38:05.152696
++y
+
+# 2024-11-16 22:39:13.486806
++n
+
+# 2024-11-16 22:39:24.072200
++/run gh workflow view master_markdown-to-form.yml --yaml
+
+# 2024-11-16 22:40:00.069058
++n
+
+# 2024-11-16 22:40:11.169721
++/run gh workflow view
+
+# 2024-11-16 22:41:03.975866
++n
+
+# 2024-11-16 22:50:46.893334
++When I commit this code and push to the remote, I get this:
++```sh
++[22:41:39] ❯ gh run list
++STATUS  NAME              WORKFLOW       BRANCH  EVENT  ID           ELAPSED  AGE
++X       fix: GitHub w...  Build and ...  master  push   11876686209  16s      2m
++X       Add vscode co...  .github/wo...  master  push   11875865170  0s       2h
++X       Merge branch ...  .github/wo...  master  push   11875597555  0s       3h
++X       Add or update...  .github/wo...  master  push   11851548999  0s       2d
++
++For details on a run, try: gh run view <run-id>
++
++markdown-to-form on  master [!] on ☁️  (us-east-1) 
++[22:41:49] ❯ gh run view 11876686209
++
++X master Build and deploy Node.js project to Azure Function App - markdown-to-form · 11876686209
++Triggered via push about 3 minutes ago
++
++JOBS
++X build in 5s (ID 33095279460)
++  ✓ Set up job
++  ✓ Checkout GitHub Action
++  ✓ Setup Node 20.x Environment
++  X Resolve Project Dependencies Using Npm
++  - Zip artifact for deployment
++  - Upload artifact for deployment job
++  - Post Setup Node 20.x Environment
++  ✓ Post Checkout GitHub Action
++  ✓ Complete job
++- deploy in 0s (ID 33095282398)
++
++ANNOTATIONS
++! The following actions use a deprecated Node.js version and will be forced to run on node20: actions/setup-node@v3. For more info: https://github.blog/changelog/2024-03-07-github-actions-all-actions-will-run-on-node20-instead-of-node16-by-default/
++build: .github#1
++
++X Process completed with exit code 254.
++build: .github#21
++
++
++To see what failed, try: gh run view 11876686209 --log-failed
++View this run on GitHub: https://github.com/bizkite-co/markdown-to-form/actions/runs/11876686209
++
++markdown-to-form on  master [!] on ☁️  (us-east-1) 
++[22:42:15] ❯ gh run view 11876686209 --log-failed
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:11.7490805Z ##[group]Run pushd './.'
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:11.7491385Z pushd './.'
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:11.7491749Z npm install
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:11.7492238Z npm run build --if-present
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:11.7492710Z npm run test --if-present
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:11.7493073Z popd
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:11.7588326Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:11.7588886Z env:
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:11.7589251Z   AZURE_FUNCTIONAPP_PACKAGE_PATH: .
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:11.7589854Z   NODE_VERSION: 20.x
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:11.7590176Z ##[endgroup]
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:11.7750540Z ~/work/markdown-to-form/markdown-to-form ~/work/markdown-to-form/markdown-to-form
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:12.1705924Z npm error code ENOENT
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:12.1707736Z npm error syscall open
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:12.1709134Z npm error path /home/runner/work/markdown-to-form/markdown-to-form/package.json
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:12.1712305Z npm error errno -2
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:12.1713977Z npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/home/runner/work/markdown-to-form/markdown-to-form/package.json'
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:12.1715629Z npm error enoent This is related to npm not being able to find a file.
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:12.1716282Z npm error enoent
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:12.1722114Z npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2024-11-17T06_39_11_833Z-debug-0.log
++build   Resolve Project Dependencies Using Npm  2024-11-17T06:39:12.1788745Z ##[error]Process completed with exit code 254.
++```
+
+# 2024-11-16 22:50:53.243801
++y
+
+# 2024-11-16 22:50:57.557226
++n
+
+# 2024-11-16 22:55:36.076196
++y
+
+# 2024-11-16 22:55:36.085024
++/run gh workflow view master_markdown-to-form.yml
