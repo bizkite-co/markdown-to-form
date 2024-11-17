@@ -6,7 +6,6 @@
             "direction": "in",
             "name": "request",
             "methods": [
-                "get",
                 "post"
             ]
         },

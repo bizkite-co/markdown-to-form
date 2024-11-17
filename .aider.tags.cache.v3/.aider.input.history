@@ -525,3 +525,142 @@
 
 # 2024-11-17 09:56:35.805831
 +n
+
+# 2024-11-17 10:49:50.426563
++/run tree -L 5 -I 'node_modules/'
+
+# 2024-11-17 10:49:58.694696
++y
+
+# 2024-11-17 10:53:06.620082
++n
+
+# 2024-11-17 10:57:15.872190
++Currently, the function is expecting the markdown form to be available in the same directory:
++```js
++        const markdownContent = await fs.readFile(markdownPath, 'utf8');
++```
++That won't work well for more than one survey, which defeats the whole purpose of this function. I need to be able to pass markdown text in the function call, and I need the `markdown-to-survey.http` updated to read the contents of the file and pass it up to the function call. 
+
+# 2024-11-17 10:57:20.508480
++y
+
+# 2024-11-17 10:59:51.519357
++/run cd MarkdownToSurvey
+
+# 2024-11-17 10:59:51.781672
++/run npm install
+
+# 2024-11-17 10:59:53.909597
++/run func start
+
+# 2024-11-17 11:00:12.531513
++/run pwd
+
+# 2024-11-17 11:00:17.350805
++n
+
+# 2024-11-17 11:00:48.550120
++/run pwd && cd MarkdownToSurvey && pwd
+
+# 2024-11-17 11:00:53.219588
++n
+
+# 2024-11-17 11:01:46.057118
++/run pwd && cd MarkdownToSurvey && pwd && yarn start
+
+# 2024-11-17 11:01:56.861595
++n
+
+# 2024-11-17 11:03:27.821461
++/run pwd && cd MarkdownToSurvey && pwd && yarn start
+
+# 2024-11-17 11:09:02.999420
++/run pwd && cd MarkdownToSurvey && pwd && npm start
+
+# 2024-11-17 11:13:46.322030
++n
+
+# 2024-11-17 11:27:03.198203
++Ok, I have the function running locally, and I have added some logging to the `index.js` to help me parse the uploaded document, but I am getting this: 
++```json
++'[{"type":"paragraph","raw":"{{$fileContent markdownFile}}","text":"{{$fileContent markdownFile}}","tokens":[{"type":"text","raw":"{{$fileContent markdownFile}}","text":"{{$fileContent markdownFile}}"}]}]'
++```
+
+# 2024-11-17 11:39:14.414757
++n
+
+# 2024-11-17 11:44:53.368301
++The function is already running locally, so you don't need to keep restarting it, but if you did you'd have to use `npm start` if you want to start it from the `package.json` dir. Now, I'm getting this:
++```json
++[2024-11-17T19:39:57.150Z] Raw Markdown Content: {{$fileContent UserSurvey.md}}
++[2024-11-17T19:39:57.150Z] Parsed Tokens: [
++[2024-11-17T19:39:57.150Z]   {
++[2024-11-17T19:39:57.150Z]     "type": "paragraph",
++[2024-11-17T19:39:57.151Z]     "raw": "{{$fileContent UserSurvey.md}}",
++[2024-11-17T19:39:57.151Z]     "text": "{{$fileContent UserSurvey.md}}",
++[2024-11-17T19:39:57.151Z]     "tokens": [
++[2024-11-17T19:39:57.151Z]       {
++[2024-11-17T19:39:57.151Z]         "type": "text",
++[2024-11-17T19:39:57.151Z]         "raw": "{{$fileContent UserSurvey.md}}",
++[2024-11-17T19:39:57.151Z]         "text": "{{$fileContent UserSurvey.md}}"
++[2024-11-17T19:39:57.151Z]       }
++[2024-11-17T19:39:57.151Z]     ]
++[2024-11-17T19:39:57.151Z]   }
++[2024-11-17T19:39:57.151Z] ]
++```
++I think your `markdown-to-survey.http` is just passing the path to the markdown file, whereas it needs to pass the contents. I think the file content might have to be converted to base64, but I think the Rest Client has a way of doing that.
+
+# 2024-11-17 11:46:39.439011
++That gives me this:
++```
++HTTP/1.1 500 Internal Server Error
++Connection: close
++Content-Type: text/plain;charset=UTF-8
++Date: Sun, 17 Nov 2024 19:45:20 GMT
++Server: Kestrel
++Transfer-Encoding: chunked
++
++{
++  "error": "Failed to generate form",
++  "message": "SyntaxError: Expected property name or '}' in JSON at position 17"
++}
++```
+
+# 2024-11-17 11:50:21.115413
++The REST Client help says this:
++```
++You can also specify file path to use as a body, which starts with < , the file path(whitespaces should be preserved) can be either in absolute or relative(relative to workspace root or current http file) formats:
++
++POST https://example.com/comments HTTP/1.1
++Content-Type: application/xml
++Authorization: token xxx
++
++< C:\Users\Default\Desktop\demo.xml
++
++POST https://example.com/comments HTTP/1.1
++Content-Type: application/xml
++Authorization: token xxx
++
++< ./demo.xml
++```
+
+# 2024-11-17 11:50:24.447704
++n
+
+# 2024-11-17 11:55:44.230574
++Now I am getting this:
++```
++HTTP/1.1 400 Bad Request
++Connection: close
++Content-Type: text/plain;charset=UTF-8
++Date: Sun, 17 Nov 2024 19:54:36 GMT
++Server: Kestrel
++Transfer-Encoding: chunked
++
++{
++  "error": "Invalid JSON",
++  "message": "Request body must be valid JSON",
++  "details": "SyntaxError: Unexpected token '#', \"# Roadmap \"... is not valid JSON"
++}
++```
