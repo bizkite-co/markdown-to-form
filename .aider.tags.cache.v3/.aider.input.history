@@ -494,3 +494,34 @@
 
 # 2024-11-17 00:08:27.973929
 +y
+
+# 2024-11-17 09:14:17.490190
++Ok, I have deployed the sitesuccessfully and I am getting a 200 result. I also changed the `authLevel` to anonymous, to make troubleshooting easier, but I have put the `_master` `Key` in the `./.envrc` in the root, so I would like to update the `markdown-to-form.http` to use that properly.
++I also need to start generating the logic that will loop through the `UserSurvey.md` and produce a Office 365 Form from it.
+
+# 2024-11-17 09:14:48.943016
++y
+
+# 2024-11-17 09:14:48.952691
++/run npm install marked
+
+# 2024-11-17 09:14:51.167245
++/run func start
+
+# 2024-11-17 09:15:43.260819
++/run tree -L 5 -I 'node_modules/'
+
+# 2024-11-17 09:15:45.629054
++y
+
+# 2024-11-17 09:16:59.797333
++n
+
+# 2024-11-17 09:55:25.418344
++/run tree -L 5 -I 'node_modules/'
+
+# 2024-11-17 09:55:28.239003
++y
+
+# 2024-11-17 09:56:35.805831
++n
