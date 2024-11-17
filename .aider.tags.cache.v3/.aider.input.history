@@ -428,3 +428,69 @@
 
 # 2024-11-16 23:04:39.937809
 +n
+
+# 2024-11-17 00:00:40.871772
++/add markdown-to-form.http
+
+# 2024-11-17 00:02:55.963630
++That fixed the deployment. Now I am getting this response from the `markdown-to-form.http`
++```
++HTTP/1.1 401 Unauthorized
++Content-Length: 0
++Connection: close
++Date: Sun, 17 Nov 2024 07:59:24 GMT
++Server: Kestrel
++Request-Context: appId=cid-v1:3f4edf92-94f4-4bbd-9611-3584ed8ca8bf
++```
++The `function.json` contains this:
++```json
++{
++    "bindings": [
++        {
++            "authLevel": "anonymous",
++            "type": "httpTrigger",
++            "direction": "in",
++            "name": "request",
++            "methods": [
++                "get",
++                "post"
++            ]
++        },
++        {
++            "type": "http",
++            "direction": "out",
++            "name": "response"
++        }
++    ]
++}
++```
+
+# 2024-11-17 00:03:03.914343
++y
+
+# 2024-11-17 00:07:04.697506
++n
+
+# 2024-11-17 00:08:23.952440
++The current `index.js` says this:
++```js
++const { app } = require('@azure/functions');
++
++app.http('MarkdownToSurvey', {
++    methods: ['GET', 'POST'],
++    authLevel: 'function',
++    handler: async (request, context) => {
++        context.log('Markdown to Survey function processed a request.');
++
++        const name = request.query.get('name') || await request.text() || 'world';
++        
++        return {
++            body: `Hello, ${name}! This is the Markdown to Survey function.`
++        };
++    }
++});
++```
++So, you attempted edit failed because you seemed to be editing different content.
+
+# 2024-11-17 00:08:27.973929
++y
