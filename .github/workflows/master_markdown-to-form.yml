@@ -36,7 +36,7 @@ jobs:
       - name: Zip artifact for deployment
         run: |
           cd '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          zip -r ../release.zip .
+          zip -r ../release.zip ./*
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -56,7 +56,7 @@ jobs:
           name: node-app
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip
+        run: unzip release.zip -d MarkdownToSurvey
       
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
@@ -64,5 +64,5 @@ jobs:
         with:
           app-name: 'markdown-to-form'
           slot-name: 'Production'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          package: './MarkdownToSurvey'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0AA18E1B96084A449494CBDD336B0E73 }}

@@ -357,3 +357,74 @@
 
 # 2024-11-16 22:55:36.085024
 +/run gh workflow view master_markdown-to-form.yml
+
+# 2024-11-16 22:56:45.831668
++n
+
+# 2024-11-16 23:01:55.130744
++/run gh workflow view master_markdown-to-form.yml
+
+# 2024-11-16 23:01:58.277554
++y
+
+# 2024-11-16 23:04:37.477928
++I get this error:
++```sh
++ gh run view 11876781446
++
++X master Build and deploy Node.js project to Azure Function App - markdown-to-form · 11876781446
++Triggered via push about 6 minutes ago
++
++JOBS
++✓ build in 1m3s (ID 33095470588)
++X deploy in 35s (ID 33095480671)
++  ✓ Set up job
++  ✓ Download artifact from build job
++  ✓ Unzip artifact for deployment
++  X Run Azure Functions Action
++  ✓ Complete job
++
++ANNOTATIONS
++! The following actions use a deprecated Node.js version and will be forced to run on node20: actions/setup-node@v3. For more info: https://github.blog/changelog/2024-03-07-github-actions-all-actions-will-run-on-node20-instead-of-node16-by-default/
++build: .github#1
++
++X Execution Exception (state: ValidateParameter) (step: Invocation)
++deploy: .github#16
++
++X   At ValidateParameter, package : cannot find 'MarkdownToSurvey'.
++deploy: .github#17
++
++X Deployment Failed!
++deploy: .github#18
++
++
++ARTIFACTS
++node-app
++
++To see what failed, try: gh run view 11876781446 --log-failed
++View this run on GitHub: https://github.com/bizkite-co/markdown-to-form/actions/runs/11876781446
++
++markdown-to-form/MarkdownToSurvey on  master [!] is 📦 v1.0.0 via  v20.17.0 on ☁️  (us-east-1) 
++[23:03:15] ❯ gh run view 11876781446 --log-failed
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9124549Z ##[group]Run Azure/functions-action@v1
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9124942Z with:
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9125184Z   app-name: markdown-to-form
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9125489Z   slot-name: Production
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9125767Z   package: MarkdownToSurvey
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9132436Z   publish-profile: ***
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9132738Z   respect-pom-xml: false
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9133033Z   respect-funcignore: false
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9133357Z   scm-do-build-during-deployment: false
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9133703Z   enable-oryx-build: false
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9133983Z   remote-build: false
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9134219Z env:
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9134492Z   AZURE_FUNCTIONAPP_PACKAGE_PATH: MarkdownToSurvey
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9134865Z   NODE_VERSION: 20.x
++deploy  Run Azure Functions Action      2024-11-17T06:58:19.9135116Z ##[endgroup]
++deploy  Run Azure Functions Action      2024-11-17T06:58:20.2653139Z ##[error]Execution Exception (state: ValidateParameter) (step: Invocation)
++deploy  Run Azure Functions Action      2024-11-17T06:58:20.2664227Z ##[error]  At ValidateParameter, package : cannot find 'MarkdownToSurvey'.
++deploy  Run Azure Functions Action      2024-11-17T06:58:20.2666656Z ##[error]Deployment Failed!
++```
+
+# 2024-11-16 23:04:39.937809
++n
