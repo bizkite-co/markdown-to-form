@@ -4,8 +4,17 @@
 @rootUrl = http://localhost:7071
 @markdownFile = ./UserSurvey.md
 
-### Send Markdown to Function
+### Generate Form Template
 POST {{rootUrl}}/api/MarkdownToSurvey HTTP/1.1
 Content-Type: application/json
 
 < ./UserSurvey.md
+
+### Create and Publish Microsoft Form
+POST {{rootUrl}}/api/MarkdownToSurvey HTTP/1.1
+Content-Type: application/json
+
+{
+    "markdown": "< ./UserSurvey.md",
+    "createForm": true
+}

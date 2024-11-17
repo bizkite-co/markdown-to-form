@@ -2,97 +2,114 @@ const { app } = require('@azure/functions');
 const fs = require('fs').promises;
 const path = require('path');
 const { marked } = require('marked');
+const crypto = require('crypto');
+const { Client } = require('@microsoft/microsoft-graph-client');
+const { DefaultAzureCredential } = require('@azure/identity');
 
-function convertToMicrosoft365FormsTemplate(formStructure) {
-    const m365Form = {
-        title: formStructure.title,
-        questions: []
-    };
-
-    formStructure.sections.forEach(section => {
-        section.questions.forEach(question => {
-            let m365Question = {
-                id: crypto.randomUUID(), // Unique identifier for each question
-                title: question.text,
-                type: 'text', // Default type
-                isRequired: false // Optional by default
-            };
-
-            // Map question types
-            switch(question.type) {
-                case 'multipleChoice':
-                    m365Question.type = 'choice';
-                    m365Question.choices = question.options.map(option => ({
-                        id: crypto.randomUUID(),
-                        text: option
-                    }));
-                    break;
-                case 'openText':
-                    m365Question.type = 'text';
-                    break;
-                default:
-                    m365Question.type = 'text';
+async function getGraphClient() {
+    const credential = new DefaultAzureCredential();
+    return Client.init({
+        authProvider: async (done) => {
+            try {
+                const token = await credential.getToken('https://graph.microsoft.com/.default');
+                done(null, token.token);
+            } catch (error) {
+                done(error, null);
             }
-
-            m365Form.questions.push(m365Question);
-        });
+        }
     });
-
-    return m365Form;
 }
 
-async function parseMarkdownToForm(markdownContent) {
-    try {
-        const tokens = marked.lexer(markdownContent);
+async function createMicrosoftFormsTemplate(markdownContent) {
+    const tokens = marked.lexer(markdownContent);
+    const formTitle = tokens.find(token => token.type === 'heading' && token.depth === 1)?.text || 'Untitled Survey';
 
-        const formStructure = {
-            title: '',
-            sections: []
+    const formQuestions = [];
+    let currentSection = null;
+
+    tokens.forEach(token => {
+        if (token.type === 'heading') {
+            if (token.depth === 2) {
+                currentSection = token.text;
+            } else if (token.depth === 4) {
+                const questionText = token.text;
+
+                // Determine question type based on subsequent tokens
+                const nextToken = tokens[tokens.indexOf(token) + 1];
+                let questionType = 'text';
+                let choices = [];
+
+                if (nextToken && nextToken.type === 'list' && !nextToken.ordered) {
+                    questionType = 'multipleChoice';
+                    choices = nextToken.items.map(item => item.text.replace(/\[ \]/g, '').trim());
+                }
+
+                formQuestions.push({
+                    id: crypto.randomUUID(),
+                    title: questionText,
+                    type: questionType,
+                    choices: choices,
+                    section: currentSection
+                });
+            }
+        }
+    });
+
+    return {
+        title: formTitle,
+        questions: formQuestions
+    };
+}
+
+async function publishMicrosoftForm(formTemplate) {
+    const client = await getGraphClient();
+
+    try {
+        // Create form
+        const formCreationPayload = {
+            title: formTemplate.title,
+            items: formTemplate.questions.map(question => {
+                const baseItem = {
+                    title: question.title,
+                    quizOptions: {
+                        pointValue: 1
+                    }
+                };
+
+                switch(question.type) {
+                    case 'multipleChoice':
+                        return {
+                            ...baseItem,
+                            type: 'multipleChoice',
+                            choices: question.choices.map(choice => ({
+                                displayName: choice,
+                                value: choice
+                            }))
+                        };
+                    case 'text':
+                    default:
+                        return {
+                            ...baseItem,
+                            type: 'text'
+                        };
+                }
+            })
         };
 
-        let currentSection = null;
-        let currentQuestion = null;
-        console.log('Raw Markdown Content:', markdownContent);
-        console.log('Parsed Tokens:', JSON.stringify(tokens, null, 2));
-        tokens.forEach(token => {
-            switch(token.type) {
-                case 'heading':
-                    if (token.depth === 1) {
-                        formStructure.title = token.text;
-                    } else if (token.depth === 2) {
-                        currentSection = {
-                            title: token.text,
-                            questions: []
-                        };
-                        formStructure.sections.push(currentSection);
-                    } else if (token.depth === 4) {
-                        currentQuestion = {
-                            text: token.text,
-                            type: 'text', // default type
-                            options: []
-                        };
-                        currentSection.questions.push(currentQuestion);
-                    }
-                    break;
-                case 'list':
-                    if (currentQuestion) {
-                        if (token.ordered === false) {
-                            currentQuestion.type = 'multipleChoice';
-                            currentQuestion.options = token.items.map(item => item.text.replace(/\[ \]/g, '').trim());
-                        }
-                    }
-                    break;
-                case 'paragraph':
-                    if (currentQuestion && token.text.includes('[Open text response]')) {
-                        currentQuestion.type = 'openText';
-                    }
-                    break;
-            }
-        });
+        const createdForm = await client.api('/forms')
+            .post(formCreationPayload);
 
-        return formStructure;
+        // Publish the form
+        await client.api(`/forms/${createdForm.id}/publish`)
+            .post({});
+
+        return {
+            formId: createdForm.id,
+            webUrl: createdForm.webUrl,
+            title: createdForm.title
+        };
     } catch (error) {
-        console.error('Error parsing markdown:', error);
+        console.error('Error creating Microsoft Form:', error);
         throw error;
     }
 }
@@ -104,18 +121,15 @@ app.http('MarkdownToSurvey', {
         context.log('Markdown to Survey function processed a request.');
 
         try {
-            // Log the raw request body for debugging
             const rawBody = await request.text();
             context.log('Raw Request Body:', rawBody);
 
-            // Check if the body is JSON or raw markdown
-            let markdownContent;
+            let markdownContent, createForm = false;
             try {
-                // Try parsing as JSON first
                 const requestBody = JSON.parse(rawBody);
                 markdownContent = requestBody.markdown;
+                createForm = requestBody.createForm || false;
             } catch {
-                // If not JSON, treat the body as raw markdown
                 markdownContent = rawBody;
             }
 
@@ -129,12 +143,18 @@ app.http('MarkdownToSurvey', {
                 };
             }
 
-            const formStructure = await parseMarkdownToForm(markdownContent);
-            const m365FormsTemplate = convertToMicrosoft365FormsTemplate(formStructure);
+            const formTemplate = await createMicrosoftFormsTemplate(markdownContent);
+
+            let result = { template: formTemplate };
+
+            if (createForm) {
+                const publishedForm = await publishMicrosoftForm(formTemplate);
+                result.form = publishedForm;
+            }
 
             return {
                 status: 200,
-                body: JSON.stringify(m365FormsTemplate),
+                body: JSON.stringify(result),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -152,3 +172,8 @@ app.http('MarkdownToSurvey', {
         }
     }
 });
+
+module.exports = {
+    createMicrosoftFormsTemplate,
+    publishMicrosoftForm
+};
